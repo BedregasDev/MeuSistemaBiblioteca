@@ -9,22 +9,25 @@ public class MeuSistemaBiblioteca implements SistemaBiblioteca{
     public MeuSistemaBiblioteca(){
         this.livros = new ArrayList<Livro>();
     }
-    public boolean cadastrarLivro(Livro novoLivro){
+    public boolean cadastrarLivro(Livro novoLivro) throws LivroJaCadastradoException{
         for(Livro l : this.livros){
             if(l.equals(novoLivro)){
-                return false;
+                throw new LivroJaCadastradoException("Livro já cadastrado: "
+                        + novoLivro.getTitulo() + ", de " + novoLivro.getAutor());
             }
         }
         this.livros.add(novoLivro);
         return true;
     }
-    public void removerLivro(String titulo, String autor){
-        for (Livro l : this.livros){
-            if(l.getTitulo().equalsIgnoreCase(titulo) &&
-                    l.getAutor().equalsIgnoreCase(autor)){
+    public void removerLivro(String titulo, String autor) throws LivroNaoEncontradoException {
+        for (Livro l : this.livros) {
+            if (l.getTitulo().equalsIgnoreCase(titulo) &&
+                    l.getAutor().equalsIgnoreCase(autor)) {
                 this.livros.remove(l);
+                return;
             }
         }
+        throw new LivroNaoEncontradoException("Livro não encontrado: " + titulo + ", de " + autor);
     }
     public List<Livro> pesquisarLivrosPeloTitulo(String titulo){
         List<Livro> livrosPesq = new ArrayList<>();
@@ -50,15 +53,15 @@ public class MeuSistemaBiblioteca implements SistemaBiblioteca{
             }
         }return livrosPesq;
     }
-    public boolean verificarSeTemDisponibilidade(String titulo,String autor){
+    public boolean verificarSeTemDisponibilidade(String titulo,String autor) throws LivroNaoEncontradoException{
         for(Livro l : this.livros){
             if(l.getTitulo().equalsIgnoreCase(titulo) &&
                     l.getAutor().equalsIgnoreCase(autor)){
                 return l.getDisponivel();
             }
-        }return false;
+        }throw new LivroNaoEncontradoException("Livro não encontrado: " + titulo + ", de " + autor);
     }
-    public boolean emprestarLivro(String titulo, String autor) {
+    public boolean emprestarLivro(String titulo, String autor) throws LivroNaoEncontradoException{
         for (Livro l : this.livros) {
             if (l.getTitulo().equalsIgnoreCase(titulo) &&
                     l.getAutor().equalsIgnoreCase(autor)) {
@@ -69,15 +72,14 @@ public class MeuSistemaBiblioteca implements SistemaBiblioteca{
                 return false;
             }
         }
-        return false;
+        throw new LivroNaoEncontradoException("Livro não encontrado: " + titulo + ", de " + autor);
     }
-    public void devolverLivro(String titulo, String autor) {
+    public void devolverLivro(String titulo, String autor) throws LivroNaoEncontradoException {
         for (Livro l : this.livros) {
             if (l.getTitulo().equalsIgnoreCase(titulo) &&
                     l.getAutor().equalsIgnoreCase(autor)) {
                 l.setDisponivel(true);
             }
-        }
+        }throw new LivroNaoEncontradoException("Livro não encontrado: " + titulo + ", de " + autor);
     }
 }
-
